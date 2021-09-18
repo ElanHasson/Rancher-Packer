@@ -2,7 +2,13 @@
 #
 apt-get update ; apt-get -y dist-upgrade
 apt-get -y autoremove
+apt-get install open-iscsi ipvsadm -y
 apt-get -y clean
+modprobe ip_vs
+modprobe ip_vs_rr
+modprobe ip_vs_wrr
+modprobe ip_vs_sh
+
 
 # Disable swap - generally recommended for K8s, but otherwise enable it for other workloads
 echo "Disable Swap"

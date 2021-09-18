@@ -34,7 +34,7 @@ autoinstall:
       type: mount
   keyboard:
       layout: en
-      variant: uk
+      variant: us
   identity:
       hostname: ubuntu
       username: packerbuilt

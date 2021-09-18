@@ -49,6 +49,10 @@
         {
           "disk_size": 8192,
           "disk_thin_provisioned": true
+        },
+        {
+          "disk_size": 114688,
+          "disk_thin_provisioned": true
         }
       ],
       "type": "vsphere-iso",
