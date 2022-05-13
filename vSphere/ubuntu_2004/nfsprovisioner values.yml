@@ -1,0 +1,191 @@
+controller:
+  affinity: {}
+  clusterDriverRegistrar:
+    enabled: false
+  driver:
+    enabled: true
+    extraEnv: []
+    extraVolumeMounts: []
+    image: docker.io/democraticcsi/democratic-csi:latest
+    lifecycle: null
+    logLevel: info
+    securityContext: null
+  enabled: true
+  externalAttacher:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-attacher:v3.1.0
+  externalHealthMonitorController:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-external-health-monitor-controller:v0.2.0
+  externalProvisioner:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--extra-create-metadata'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-provisioner:v2.1.0
+  externalResizer:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--workers=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-resizer:v1.1.0
+  externalSnapshotter:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-snapshotter:v3.0.3
+  extraVolumes: []
+  hostAliases: []
+  hostIPC: false
+  hostNetwork: false
+  livenessProbe:
+    enabled: true
+  nodeSelector: {}
+  podAnnotations: {}
+  podLabels: {}
+  rbac:
+    enabled: true
+    openshift:
+      privileged: false
+  replicaCount: 1
+  strategy: deployment
+  tolerations: []
+csiDriver:
+  attachRequired: false
+  enabled: true
+  installCRD: false
+  name: org.democratic-csi.nfs
+  podInfoOnMount: true
+  version: 1.2.0
+driver:
+  config:
+    driver: freenas-nfs
+    httpConnection:
+      allowInsecure: true
+      host: 172.16.1.62
+      password: mkf_cpf_MKM.yjr3nvg
+      port: 80
+      protocol: http
+      username: root
+    instance_id: null
+    nfs:
+      shareAlldirs: false
+      shareAllowedHosts: null
+      shareAllowedNetworks: null
+      shareHost: 172.16.1.62
+      shareMapallGroup: ''
+      shareMapallUser: ''
+      shareMaprootGroup: wheel
+      shareMaprootUser: root
+    sshConnection:
+      host: 172.16.1.62
+      password: mkf_cpf_MKM.yjr3nvg
+      port: 22
+      username: root
+    zfs:
+      datasetEnableQuotas: true
+      datasetEnableReservation: false
+      datasetParentName: vmdkdisk1/k8s/nfs/vols/
+      datasetPermissionsGroup: wheel
+      datasetPermissionsMode: '0777'
+      datasetPermissionsUser: root
+      detachedSnapshotsDatasetParentName: vmdkdisk1/k8s/nfs/snaps
+  existingConfigSecret: null
+fullnameOverride: ''
+nameOverride: ''
+node:
+  affinity: {}
+  driver:
+    enabled: true
+    extraEnv: []
+    extraVolumeMounts: []
+    image: docker.io/democraticcsi/democratic-csi:latest
+    lifecycle: null
+    localtimeHostPath: /etc/localtime
+    logLevel: info
+  driverRegistrar:
+    args:
+      - '--v=5'
+      - '--csi-address=/csi-data/csi.sock'
+      - >-
+        --kubelet-registration-path={{ .Values.node.kubeletHostPath
+        }}/plugins/{{ .Values.csiDriver.name }}/csi.sock
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0
+  enabled: true
+  externalHealthMonitorAgent:
+    args:
+      - '--v=5'
+      - '--timeout=15s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-external-health-monitor-agent:v0.2.0
+  extraVolumes: []
+  hostAliases: []
+  hostIPC: true
+  hostNetwork: true
+  kubeletHostPath: /var/lib/kubelet
+  livenessProbe:
+    enabled: true
+  nodeSelector: {}
+  podAnnotations: {}
+  podLabels: {}
+  rbac:
+    enabled: true
+    openshift:
+      privileged: false
+  tolerations: []
+storageClasses:
+  - allowVolumeExpansion: true
+    defaultClass: false
+    mountOptions:
+      - noatime
+      - nfsvers=4
+    name: freenas-nfs-csi
+    parameters:
+      fsType: nfs
+    reclaimPolicy: Delete
+    secrets:
+      controller-expand-secret: null
+      controller-publish-secret: null
+      node-publish-secret: null
+      node-stage-secret: null
+      provisioner-secret: null
+    volumeBindingMode: Immediate
+volumeSnapshotClasses: []

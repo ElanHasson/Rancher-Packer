@@ -1,0 +1,228 @@
+controller:
+  affinity: {}
+  clusterDriverRegistrar:
+    enabled: false
+  driver:
+    enabled: true
+    extraEnv: []
+    extraVolumeMounts: []
+    image: docker.io/democraticcsi/democratic-csi:latest
+    lifecycle: null
+    logLevel: info
+    securityContext: null
+  enabled: true
+  externalAttacher:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-attacher:v3.1.0
+  externalHealthMonitorController:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-external-health-monitor-controller:v0.2.0
+  externalProvisioner:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--extra-create-metadata'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-provisioner:v2.1.0
+  externalResizer:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--workers=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-resizer:v1.1.0
+  externalSnapshotter:
+    args:
+      - '--v=5'
+      - '--leader-election'
+      - '--leader-election-namespace={{ .Release.Namespace }}'
+      - '--timeout=90s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-snapshotter:v3.0.3
+  extraVolumes: []
+  hostAliases: []
+  hostIPC: false
+  hostNetwork: false
+  livenessProbe:
+    enabled: true
+  nodeSelector: {}
+  podAnnotations: {}
+  podLabels: {}
+  rbac:
+    enabled: true
+    openshift:
+      privileged: false
+  replicaCount: 1
+  strategy: deployment
+  tolerations: []
+csiDriver:
+  attachRequired: false
+  enabled: true
+  installCRD: false
+  name: "org.democratic-csi.iscsi"
+  podInfoOnMount: true
+  version: 1.2.0
+driver:
+  config:
+    driver: freenas-iscsi
+    instance_id:
+    httpConnection:
+      protocol: http
+      host: 172.16.1.62
+      port: 80
+      username: root
+      password: mkf_cpf_MKM.yjr3nvg
+      allowInsecure: true
+      apiVersion: 2
+    sshConnection:
+      host: 172.16.1.62
+      port: 22
+      username: root
+      # use either password or key
+      password: mkf_cpf_MKM.yjr3nvg
+        #      privateKey: |
+        #        -----BEGIN RSA PRIVATE KEY-----
+        #        ...
+        #        -----END RSA PRIVATE KEY-----
+    zfs:
+      # the example below is useful for TrueNAS 12
+      cli:
+        paths:
+          zfs: /usr/local/sbin/zfs
+          zpool: /usr/local/sbin/zpool
+          sudo: /usr/local/bin/sudo
+          chroot: /usr/sbin/chroot
+      # total volume name (zvol/<datasetParentName>/<pvc name>) length cannot exceed 63 chars
+      # https://www.ixsystems.com/documentation/freenas/11.2-U5/storage.html#zfs-zvol-config-opts-tab
+      # standard volume naming overhead is 46 chars
+      # datasetParentName should therefore be 17 chars or less
+      datasetParentName: vmdkdisk1/k8s/iscsi
+      detachedSnapshotsDatasetParentName: vmdkdisk1/k8s/iscsi/v
+      # "" (inherit), lz4, gzip-9, etc
+      zvolCompression:
+      # "" (inherit), on, off, verify
+      zvolDedup:
+      zvolEnableReservation: false
+      # 512, 1K, 2K, 4K, 8K, 16K, 64K, 128K default is 16K
+      zvolBlocksize:
+    iscsi:
+      targetPortal: "172.16.1.62:3260"
+      targetPortals: []
+      # leave empty to omit usage of -I with iscsiadm
+      interface:
+      namePrefix: csi-
+      nameSuffix: "-cluster"
+      # add as many as needed
+      targetGroups:
+        # get the correct ID from the "portal" section in the UI
+        - targetGroupPortalGroup: 1
+          # get the correct ID from the "initiators" section in the UI
+          targetGroupInitiatorGroup: 1
+          # None, CHAP, or CHAP Mutual
+          targetGroupAuthType: None
+          # get the correct ID from the "Authorized Access" section of the UI
+          # only required if using Chap
+          targetGroupAuthGroup:
+      extentInsecureTpc: true
+      extentXenCompat: false
+      extentDisablePhysicalBlocksize: true
+      # 512, 1024, 2048, or 4096,
+      extentBlocksize: 4096
+      # "" (let FreeNAS decide, currently defaults to SSD), Unknown, SSD, 5400, 7200, 10000, 15000
+      extentRpm: "7200"
+      # 0-100 (0 == ignore)
+      extentAvailThreshold: 0
+  existingConfigSecret: null
+fullnameOverride: ''
+nameOverride: ''
+node:
+  affinity: {}
+  driver:
+    enabled: true
+    extraEnv: []
+    extraVolumeMounts: []
+    image: docker.io/democraticcsi/democratic-csi:latest
+    lifecycle: null
+    localtimeHostPath: /etc/localtime
+    logLevel: info
+  driverRegistrar:
+    args:
+      - '--v=5'
+      - '--csi-address=/csi-data/csi.sock'
+      - >-
+        --kubelet-registration-path={{ .Values.node.kubeletHostPath
+        }}/plugins/{{ .Values.csiDriver.name }}/csi.sock
+    enabled: true
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0
+  enabled: true
+  externalHealthMonitorAgent:
+    args:
+      - '--v=5'
+      - '--timeout=15s'
+      - '--worker-threads=10'
+      - '--csi-address=/csi-data/csi.sock'
+    enabled: false
+    extraArgs: []
+    image: k8s.gcr.io/sig-storage/csi-external-health-monitor-agent:v0.2.0
+  extraVolumes: []
+  hostAliases: []
+  hostIPC: true
+  hostNetwork: true
+  kubeletHostPath: /var/lib/kubelet
+  livenessProbe:
+    enabled: true
+  nodeSelector: {}
+  podAnnotations: {}
+  podLabels: {}
+  rbac:
+    enabled: true
+    openshift:
+      privileged: false
+  tolerations: []
+storageClasses:
+- name: freenas-iscsi-csi
+  defaultClass: false
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  allowVolumeExpansion: true
+  parameters:
+    # for block-based storage can be ext3, ext4, xfs
+    fsType: xfs
+
+  mountOptions: []
+  secrets:
+    provisioner-secret:
+    controller-publish-secret:
+    node-stage-secret:
+    node-publish-secret:
+    controller-expand-secret:
+volumeSnapshotClasses: []

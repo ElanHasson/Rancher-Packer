@@ -4,27 +4,28 @@ apt-get update ; apt-get -y dist-upgrade
 apt-get -y autoremove
 apt-get -y clean
 # install iscsi 
-apt-get install -y open-iscsi lsscsi iscsi-initiator-utils sg3_utils device-mapper-multipath
+apt-get install -y open-iscsi lsscsi iscsi-initiator-utils sg3_utils device-mapper-multipath multipath-tools scsitools
 # enable multipathing
-sudo tee /etc/multipath.conf <<-'EOF'
+tee /etc/multipath.conf <<-'EOF'
 defaults {
     user_friendly_names yes
     find_multipaths yes
 }
 EOF
 
-sudo systemctl enable multipath-tools.service
 
-sudo service multipath-tools restart
+# Ensure that open-iscsi and multipath-tools are enabled and running
+systemctl status multipath-tools
+systemctl enable open-iscsi.service
+service open-iscsi start
+systemctl status open-iscsi
 
-sudo systemctl status multipath-tools
+systemctl enable multipath-tools.service
+service multipath-tools restart
 
-sudo systemctl enable open-iscsi.service
 
-sudo service open-iscsi start
-
-sudo systemctl status open-iscsi
-5ghf5
+# enable nfs
+apt-get install -y libnfs-utils
 
 #apt-get install --reinstall linux-modules-5.4.0-81-generic -y
 

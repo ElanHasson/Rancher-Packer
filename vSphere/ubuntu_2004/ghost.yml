@@ -1,0 +1,187 @@
+affinity: {}
+allowEmptyPassword: true
+args: []
+clusterDomain: cluster.local
+command: []
+commonAnnotations: {}
+commonLabels: {}
+containerPorts:
+  http: 2368
+  https: 2369
+containerSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1001
+customLivenessProbe:
+   httpGet:
+      path: /
+      port: https
+      scheme: HTTPS
+      httpHeaders:
+      - name: X-Forwarded-Proto
+        value: https
+      - name: Host
+        value: throw.nullreference.io
+   initialDelaySeconds: 120
+   periodSeconds: 10
+   successThreshold: 1
+   timeoutSeconds: 5
+   failureThreshold: 6
+customReadinessProbe: 
+   httpGet:
+      path: /
+      port: https
+      scheme: HTTPS
+      httpHeaders:
+      - name: X-Forwarded-Proto
+        value: https
+      - name: Host
+        value: throw.nullreference.io
+   initialDelaySeconds: 30
+   periodSeconds: 5
+   successThreshold: 1
+   timeoutSeconds: 3
+   failureThreshold: 6
+existingSecret: ''
+externalDatabase:
+  database: bitnami_ghost
+  existingSecret: ''
+  host: localhost
+  password: ''
+  port: 3306
+  user: bn_ghost
+extraDeploy: []
+extraEnvVars: []
+extraEnvVarsCM: ''
+extraEnvVarsSecret: ''
+extraVolumeMounts: []
+extraVolumes: []
+fullnameOverride: ''
+ghostBlogTitle: Throwin's Exceptions
+ghostEmail: elan.hasson@gmail.com
+ghostEnableHttps: true
+ghostHost: 'throw.nullreference.io'
+ghostPassword: ''
+ghostPath: /
+ghostSkipInstall: false
+ghostUsername: elan
+global:
+  imagePullSecrets: []
+  imageRegistry: ''
+  storageClass: ''
+hostAliases: []
+image:
+  debug: false
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  registry: docker.io
+  repository: bitnami/ghost
+  tag: 4.17.0-debian-10-r0
+ingress:
+  annotations: {}
+  apiVersion: ''
+  enabled: true
+  extraHosts: []
+  extraPaths: []
+  extraTls: []
+  hostname: throw.nullreference.io
+  path: /
+  pathType: ImplementationSpecific
+  secrets: []
+  selfSigned: true
+  tls: true
+initContainers: []
+kubeVersion: ''
+lifecycleHooks: {}
+livenessProbe:
+  enabled: false
+  failureThreshold: 6
+  initialDelaySeconds: 120
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 5
+mariadb:
+  architecture: standalone
+  auth:
+    database: bitnami_ghost
+    existingSecret: ''
+    password: ''
+    rootPassword: ''
+    username: bn_ghost
+  enabled: true
+  primary:
+    persistence:
+      accessModes:
+        - ReadWriteOnce
+      enabled: true
+      size: 8Gi
+      storageClass: 'vsphere-csi-sc'
+nameOverride: ''
+nodeAffinityPreset:
+  key: ''
+  type: ''
+  values: []
+nodeSelector: {}
+persistence:
+  accessModes:
+    - ReadWriteMany
+  annotations: {}
+  enabled: true
+  existingClaim: ''
+  size: 8Gi
+  storageClass: 'freenas-nfs-csi'
+podAffinityPreset: ''
+podAnnotations: {}
+podAntiAffinityPreset: soft
+podLabels: {}
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+priorityClassName: ''
+readinessProbe:
+  enabled: false
+  failureThreshold: 6
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 3
+replicaCount: 1
+resources:
+  limits: {}
+  requests: {}
+service:
+  annotations: {}
+  clusterIP: ''
+  externalTrafficPolicy: Cluster
+  extraPorts: []
+  httpsPort: 443
+  loadBalancerIP: ''
+  loadBalancerSourceRanges: []
+  nodePorts:
+    http: ''
+    https: ''
+  port: 80
+  type: LoadBalancer
+sidecars: []
+smtpExistingSecret: ''
+smtpHost: '172.16.1.75'
+smtpPassword: ''
+smtpPort: '5'
+smtpService: ''
+smtpUser: ''
+tolerations: {}
+updateStrategy:
+  type: RollingUpdate
+volumePermissions:
+  enabled: false
+  image:
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+    registry: docker.io
+    repository: bitnami/bitnami-shell
+    tag: 10-debian-10-r209
+  resources:
+    limits: {}
+    requests: {}
+  securityContext:
+    runAsUser: 0
